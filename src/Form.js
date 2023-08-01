@@ -20,7 +20,6 @@ const Form = () => {
   const nameRegex = /^[A-Za-z]/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-  const [lastId, setLastId] = useState(0);
   const [details, setDetails] = useState([
 
 ]); 
@@ -71,8 +70,7 @@ const Form = () => {
 
     switch (fieldName) {
       case "firstname":
-        newFormErrors.firstname = formData.firstname  ? "" : "First name is required";
-        newFormErrors.firstname = nameRegex.test(formData.firstname)  ? "" : "First name is invalid";
+        newFormErrors.firstname = formData.firstname && nameRegex.test(formData.firstname) ? "" : "First name is required";
         break;
       case "lastname":
         newFormErrors.lastname = formData.lastname && nameRegex.test(formData.lastname) ? "" : "Last name is required";
@@ -101,11 +99,9 @@ const Form = () => {
         ...formData,
         createdAtDate: currentDate,
         createdAtTime: currentTime,
-        id: lastId + 1,
       };
 
       setDetails([...details, newFormData]);
-      setLastId(lastId + 1);
       setFormData({
         firstname: "",
         lastname: "",
@@ -185,7 +181,7 @@ const Form = () => {
           </button>
         </form>
       </div>
-      {details.length > 0 ? (
+      {details.length > 0 && (
         <div className="container-lg mt-5">
           <h2>Details Table</h2>
           <table className="table table-bordered">
@@ -201,9 +197,9 @@ const Form = () => {
               </tr>
             </thead>
             <tbody>
-              {details.map((detail) => (
-                <tr>
-                  <td>{detail.id}</td>
+              {details.map((detail,index) => (
+                <tr key={index}>
+                  <td>{index+1}</td>
                   <td>{detail.firstname}</td>
                   <td>{detail.lastname}</td>
                   <td>{detail.email}</td>
@@ -215,7 +211,7 @@ const Form = () => {
             </tbody>
           </table>
         </div>
-      ):(<div></div>)}
+      )}
     </>
   );
 };
