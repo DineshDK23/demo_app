@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Form.css";
 import moment from "moment";
+import Detail from "./Detail";
 
 const Form = () => {
   const [formData, setFormData] = useState({
@@ -17,22 +17,41 @@ const Form = () => {
     email: "",
     password: "",
   });
+  const [editIndex, setEditIndex] = useState(-1); // Track the index of the detail being edited
+  const [isEditMode, setIsEditMode] = useState(false); // Track whether the form is in edit mode or not
+
+  const editHandler = (detail, index) => {
+    setFormData({
+      firstname: detail.firstname,
+      lastname: detail.lastname,
+      email: detail.email,
+      password: detail.password,
+    });
+    setIsEditMode(true);
+    setIsSubmit(false);
+    setEditIndex(index);
+  };
+  const deleteHandler = (index) => {
+    const updatedDetails = [...details];
+    updatedDetails.splice(index, 1);
+    setDetails(updatedDetails);
+  };
+  
   const nameRegex = /^[A-Za-z]/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-  const [details, setDetails] = useState([
-
-]); 
+  const [details, setDetails] = useState([]);
+  const [isSubmit, setIsSubmit] = useState(false);
   const validateForm = () => {
     let valid = true;
     const newFormErrors = {};
 
-    if (!formData.firstname) {
+    if (!formData.firstname || nameRegex.test(formData.firstname)) {
       newFormErrors.firstname = "First name is required";
       valid = false;
     }
 
-    if (!formData.lastname) {
+    if (!formData.lastname || nameRegex.test(formData.lastname)) {
       newFormErrors.lastname = "Last name is required";
       valid = false;
     }
@@ -53,10 +72,9 @@ const Form = () => {
   };
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [event.target.name]: event.target.value,
     });
   };
 
@@ -89,7 +107,9 @@ const Form = () => {
 
     setFormErrors(newFormErrors);
   };
-
+useEffect =()=>{
+  
+}
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validateForm()) {
@@ -100,8 +120,17 @@ const Form = () => {
         createdAtDate: currentDate,
         createdAtTime: currentTime,
       };
+      if (isEditMode) {
+        const updatedDetails = [...details];
+        updatedDetails[editIndex] = newFormData;
+        setDetails(updatedDetails);
+        setIsEditMode(false);
+      }
+      else {
+        setDetails([...details, newFormData]);
+      }
+      setIsSubmit(true);
 
-      setDetails([...details, newFormData]);
       setFormData({
         firstname: "",
         lastname: "",
@@ -113,17 +142,16 @@ const Form = () => {
 
   return (
     <>
-      <div className="container mt-5">
-        <h2 className="mb-4">Registration Form</h2>
+      <div className={`container-lg form-container mt-5 ${isSubmit ? "d-none" : "d-block"}`}>
+        <h2 className="mb-4 text-center">Registration Form</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="firstname" style={{color :` ${formErrors.firstname ? "#d31515" : ""}`}}>First Name:</label>
+            <label htmlFor="firstname" style={{ color: ` ${formErrors.firstname ? "#d31515" : ""}` }}>First Name:</label>
             <input
               type="text"
               className={`form-control ${formErrors.firstname ? "is-invalid" : ""}`}
               id="firstname"
               name="firstname"
-              required
               value={formData.firstname}
               onChange={handleInputChange}
               onBlur={handleBlur}
@@ -132,13 +160,12 @@ const Form = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="lastname"style={{color :` ${formErrors.lastname ? "#d31515" : ""}`}}>Last Name:</label>
+            <label htmlFor="lastname" style={{ color: ` ${formErrors.lastname ? "#d31515" : ""}` }}>Last Name:</label>
             <input
               type="text"
               className={`form-control ${formErrors.lastname ? "is-invalid" : ""}`}
               id="lastname"
               name="lastname"
-              required
               value={formData.lastname}
               onChange={handleInputChange}
               onBlur={handleBlur}
@@ -147,13 +174,12 @@ const Form = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email"style={{color :` ${formErrors.email ? "#d31515" : ""}`}}>Email:</label>
+            <label htmlFor="email" style={{ color: ` ${formErrors.email ? "#d31515" : ""}` }}>Email:</label>
             <input
               type="email"
               className={`form-control ${formErrors.email ? "is-invalid" : ""}`}
               id="email"
               name="email"
-              required
               value={formData.email}
               onChange={handleInputChange}
               onBlur={handleBlur}
@@ -162,13 +188,12 @@ const Form = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password"style={{color :` ${formErrors.password ? "#d31515" : ""}`}}>Password:</label>
+            <label htmlFor="password" style={{ color: ` ${formErrors.password ? "#d31515" : ""}` }}>Password:</label>
             <input
               type="password"
               className={`form-control ${formErrors.password ? "is-invalid" : ""}`}
               id="password"
               name="password"
-              required
               value={formData.password}
               onChange={handleInputChange}
               onBlur={handleBlur}
@@ -177,11 +202,13 @@ const Form = () => {
           </div>
 
           <button type="submit" className="btn btn-primary">
-            Submit
+            {isEditMode ? "Update" : "Submit"}
           </button>
         </form>
       </div>
-      {details.length > 0 && (
+      <Detail details={details} className={isSubmit ? "d-block" : "d-none"} 
+       editHandler={editHandler} deleteHandler={deleteHandler} setIsSubmit={setIsSubmit} />
+      {/* {details.length > 0 && (
         <div className="container-lg mt-5">
           <h2>Details Table</h2>
           <table className="table table-bordered">
@@ -211,7 +238,7 @@ const Form = () => {
             </tbody>
           </table>
         </div>
-      )}
+      )} */}
     </>
   );
 };

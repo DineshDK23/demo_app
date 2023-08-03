@@ -1,8 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
-import Calculator from './Calculator';
-import EffectState from './EffectState';
-import Form from './Form';
+import Calculator from './Components/Calculator';
+import EffectState from './Components/EffectState';
+import Form from './Components/Form';
 
 function App() {
   return (

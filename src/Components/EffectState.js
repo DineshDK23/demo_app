@@ -16,6 +16,8 @@ const EffectState = () => {
       { id: 101, name: 'Namakkal' },
       { id: 102, name: 'Karur' },
       { id: 103, name: 'Salem' },
+      { id: 104, name: 'Chennai' },
+      { id: 105, name: 'Madurai' },
     ],
     AP: [
       { id: 201, name: 'Vizag' },
@@ -44,28 +46,28 @@ const EffectState = () => {
 
   const handleStateChange = (event) => {
     setSelectedState(event.target.value);
-    //setSelectedDistrict('');
+    setSelectedDistrict('');
   };
 
   const handleDistrictChange = (event) => {
-    setSelectedDistrict(event.target.value);
+    setSelectedDistrict(event.target.value);   
   };
 
   return (
-    <div>
+    <div className=''>
       <h2>State:</h2>
-      <select value={selectedState} onChange={handleStateChange}>
+      <select className='form-select w-25 mb-4'style={{display:"initial"}} value={selectedState} onChange={handleStateChange}>
         <option value="">Select a state</option>
         {states.map(state => (
-          <option value={state.id}>{state.name}</option>
+          <option key={state.id} value={state.id}>{state.name}</option>
         ))}
       </select>
 
       <h2>District:</h2>
-      <select value={selectedDistrict} onChange={handleDistrictChange}>
+      <select className='form-select w-25 ' style={{display:"initial"}} value={selectedDistrict} onChange={handleDistrictChange}>
         <option value="">Select a district</option>
         {districts.map(district => (
-          <option value={district.id}>{district.name}</option>
+          <option key={district.id} value={district.id}>{district.name}</option>
         ))}
       </select>
     </div>
